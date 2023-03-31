@@ -135,7 +135,7 @@ func run() error {
 
 	// 2023-03-01  2023-03-31 has 21 chars
 	if len(*rangeFlag) < 21 {
-		return fmt.Errorf("Please provide the timestamp range like -range '2023-03-01 - 2023-03-31'")
+		return fmt.Errorf("Please provide the timestamp range like -range '2023-03-01  2023-03-31'")
 	}
 
 	if err := checkDates(*rangeFlag); err != nil {
@@ -150,7 +150,6 @@ func run() error {
 
 	// Calls gdbus
 	out, err := exec.Command("gdbus", params...).Output()
-
 	if err != nil {
 		return err
 	}
