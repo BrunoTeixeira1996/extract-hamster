@@ -16,7 +16,7 @@ type Data struct {
 	Activity string
 	Category string
 	Range    map[string]string
-	Duration int
+	Duration float64
 }
 
 type Date struct {
@@ -123,7 +123,7 @@ func (d *Data) calcDurationInMinutes() error {
 		return fmt.Errorf("Error while parsing duration:%w", err)
 	}
 
-	fmt.Printf("%0.f\n", secs.Minutes())
+	d.Duration = secs.Minutes()
 
 	return nil
 }
@@ -174,7 +174,7 @@ func run() error {
 
 	for _, d := range data {
 		d.calcDurationInMinutes()
-		// TODO: Create correct output with more data
+		fmt.Printf("%s,%s,%s,%.f,%s\n", d.Activity, d.Range["start"], d.Range["end"], d.Duration, d.Category)
 	}
 
 	return nil
@@ -188,9 +188,8 @@ func main() {
 }
 
 /*
-   Activity, Start Time, End Time, Duration in minutes, Category
-   - doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
-
-   libreoffice --calc a.csv
-   then open as comma separate
+   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
+   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
+   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
+   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
 */

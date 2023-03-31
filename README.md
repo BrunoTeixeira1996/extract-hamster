@@ -1,8 +1,4 @@
 # extract-hamster
 
-extract hamster is a tool to easily extract daily status in gnome hamster.
+extract hamster is a tool to easily extract daily status in gnome hamster to a csv format so it's easier to use this information into a sheet.
 
-## Todo
-
-- Output more information from gdbus
-- Copy output to clipboard so it's easier to upload in excel
