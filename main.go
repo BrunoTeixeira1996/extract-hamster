@@ -131,6 +131,7 @@ func (d *Data) calcDurationInMinutes() error {
 // Function that handles the errors
 func run() error {
 	rangeFlag := flag.String("range", "", "'2023-03-01  2023-03-31'")
+	calcMinutesFlag := flag.Bool("calc-minutes", false, "-calc to show duration in minutes of outputed range")
 	flag.Parse()
 
 	// 2023-03-01  2023-03-31 has 21 chars
@@ -171,10 +172,16 @@ func run() error {
 		return err
 	}
 
+	var t float32
 	for _, d := range data {
 		d.calcDurationInMinutes()
+		if *calcMinutesFlag {
+			t += float32(d.Duration)
+		}
 		fmt.Printf("%s,%s,%s,%.f,%s\n", d.Activity, d.Range["start"], d.Range["end"], d.Duration, d.Category)
 	}
+
+	fmt.Printf("Total in minutes: %.f\n", t)
 
 	return nil
 }
