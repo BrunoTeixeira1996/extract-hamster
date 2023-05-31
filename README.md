@@ -23,3 +23,9 @@ The following outputs only the filtered project (activity in hamster)
 ``` console
 $ extract-hamster -range <date range> -project "PROJECT_HERE" -out
 ```
+
+The following outputs only the filtered project and filters the activity (activity in hamster)
+
+``` console
+$ extract-hamster -range <date range> -project "PROJECT_HERE" -activity "KEYWORD" -out
+```
