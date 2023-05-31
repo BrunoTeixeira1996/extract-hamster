@@ -138,7 +138,8 @@ func run() error {
 	outFlag := flag.Bool("out", false, "-out gives correct formating to copy and paste into libre cal or excel")
 	rangeFlag := flag.String("range", "", "'2023-03-01  2023-03-31'")
 	calcMinutesFlag := flag.Bool("calc-minutes", false, "-calc-minutes to show duration in minutes of outputed range")
-	projectFlag := flag.String("project", "", "-project 'PROJECT_CODE'")
+	projectFlag := flag.String("project", "", "-project filters for 'PROJECT_CODE'")
+	activityFlag := flag.String("activity", "", "-activity filters for 'activity'")
 	flag.Parse()
 
 	// 2023-03-01  2023-03-31 has 21 chars
@@ -187,18 +188,26 @@ func run() error {
 
 		d.calcDurationInMinutes()
 
-		// If the project flag is set and is equal do the category or if the project flag is not set build the Output struct
+		// If the project flag is set and is equal do the category or if project flag is not set build the Output
 		if len(*projectFlag) > 0 && *projectFlag == d.Category || len(*projectFlag) == 0 {
-			temp = Output{
-				Data: Data{
-					Activity: d.Activity,
-					Category: d.Category,
-					Range: map[string]string{
-						"start": d.Range["start"],
-						"end":   d.Range["end"],
+			// NOTE that this is true even when activity flag is not set because strings.Contains(str, substr)
+			// and using the empty string (activity flag) as the substring makes this always true
+			// I did this so it works with and without the activity flag set
+			if strings.Contains(d.Activity, *activityFlag) {
+				temp = Output{
+					Data: Data{
+						Activity: d.Activity,
+						Category: d.Category,
+						Range: map[string]string{
+							"start": d.Range["start"],
+							"end":   d.Range["end"],
+						},
+						Duration: d.Duration,
 					},
-					Duration: d.Duration,
-				},
+				}
+
+			} else {
+				continue
 			}
 
 			if *calcMinutesFlag {
@@ -215,10 +224,6 @@ func run() error {
 		}
 
 		output = append(output, temp)
-	}
-
-	if len(output) == 0 {
-		return fmt.Errorf("Looks like that project does not exist")
 	}
 
 	// Output according to the flags passed
