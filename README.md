@@ -21,5 +21,5 @@ $ extract-hamster -range <date range> -calc-minutes
 The following outputs only the filtered project (activity in hamster)
 
 ``` console
-$ extract-hamster -range <date range> -project "PROJECT_HERE"
+$ extract-hamster -range <date range> -project "PROJECT_HERE" -out
 ```
