@@ -9,6 +9,17 @@ The following shows installing, executing and copying the output to clipboard (x
 
 ``` console
 $ go install github.com/BrunoTeixeira1996/extract-hamster@latest
-$ extract-hamster -range <date range> | xclip -selection clipboard
+$ extract-hamster -range <date range> -out | xclip -selection clipboard
 ```
 
+The following calcs the output in minutes
+
+``` console
+$ extract-hamster -range <date range> -calc-minutes
+```
+
+The following outputs only the filtered project (activity in hamster)
+
+``` console
+$ extract-hamster -range <date range> -project "PROJECT_HERE"
+```

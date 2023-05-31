@@ -28,6 +28,11 @@ type Date struct {
 	Sec    int
 }
 
+type Output struct {
+	Data      Data
+	TotalTime float64
+}
+
 // Split and validate dates
 func checkDates(dates string) error {
 	splittedDates := strings.Split(dates, " ")
@@ -130,8 +135,10 @@ func (d *Data) calcDurationInMinutes() error {
 
 // Function that handles the errors
 func run() error {
+	outFlag := flag.Bool("out", false, "-out gives correct formating to copy and paste into libre cal or excel")
 	rangeFlag := flag.String("range", "", "'2023-03-01  2023-03-31'")
-	calcMinutesFlag := flag.Bool("calc-minutes", false, "-calc to show duration in minutes of outputed range")
+	calcMinutesFlag := flag.Bool("calc-minutes", false, "-calc-minutes to show duration in minutes of outputed range")
+	projectFlag := flag.String("project", "", "-project 'PROJECT_CODE'")
 	flag.Parse()
 
 	// 2023-03-01  2023-03-31 has 21 chars
@@ -172,16 +179,59 @@ func run() error {
 		return err
 	}
 
-	var t float32
+	var t float64
+	var output []Output
+
 	for _, d := range data {
+		var temp Output
+
 		d.calcDurationInMinutes()
-		if *calcMinutesFlag {
-			t += float32(d.Duration)
+
+		// If the project flag is set and is equal do the category or if the project flag is not set build the Output struct
+		if len(*projectFlag) > 0 && *projectFlag == d.Category || len(*projectFlag) == 0 {
+			temp = Output{
+				Data: Data{
+					Activity: d.Activity,
+					Category: d.Category,
+					Range: map[string]string{
+						"start": d.Range["start"],
+						"end":   d.Range["end"],
+					},
+					Duration: d.Duration,
+				},
+			}
+
+			if *calcMinutesFlag {
+				t += d.Duration
+			}
+
+			// This means that we didn't set the projectFlag or the projectFlag != d.Category, so we continue to the next iteration
+		} else {
+			continue
 		}
-		fmt.Printf("%s,%s,%s,%.f,%s\n", d.Activity, d.Range["start"], d.Range["end"], d.Duration, d.Category)
+
+		if *calcMinutesFlag {
+			temp.TotalTime = t
+		}
+
+		output = append(output, temp)
 	}
 
-	fmt.Printf("Total in minutes: %.f\n", t)
+	if len(output) == 0 {
+		return fmt.Errorf("Looks like that project does not exist")
+	}
+
+	// Output according to the flags passed
+	if *outFlag {
+		for _, d := range output {
+			fmt.Printf("%s,%s,%s,%s\n", d.Data.Activity, d.Data.Range["start"], d.Data.Range["end"], d.Data.Category)
+		}
+	}
+
+	// Extract minutes from current search
+	if *calcMinutesFlag {
+		fmt.Printf("Total time: %.f (minutes)\n", output[len(output)-1].TotalTime)
+	}
 
 	return nil
 }
@@ -192,10 +242,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-
-/*
-   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
-   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
-   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
-   doing something, 2022-03-01 09:12, 2022-03-01 18:00, 112, TEST_CATEGORY
-*/
