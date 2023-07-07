@@ -229,7 +229,7 @@ func run() error {
 	// Output according to the flags passed
 	if *outFlag {
 		for _, d := range output {
-			fmt.Printf("%s,%s,%s,%s\n", d.Data.Activity, d.Data.Range["start"], d.Data.Range["end"], d.Data.Category)
+			fmt.Printf("%s,%s,%s,%.f,%s\n", d.Data.Activity, d.Data.Range["start"], d.Data.Range["end"], d.Data.Duration, d.Data.Category)
 		}
 	}
 
